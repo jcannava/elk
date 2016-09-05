@@ -1,0 +1,36 @@
+elasticsearch:
+  image: elasticsearch:latest
+  command: elasticsearch -Des.network.host=0.0.0.0 -Des.logger.level=WARNING
+  ports:
+    - "9200:9200"
+    - "9300:9300"
+  volumes:
+    - /opt/elasticsearch/data:/usr/share/elasticsearch/data
+    - /opt/elasticsearch/config:/usr/share/elasticsearch/config
+    - /opt/elasticsearch/config:/usr/share/elasticsearch/log
+  restart: always
+  environment:
+    ES_HEAP_SIZE: "512m"
+logstash:
+  image: jcannava:logstash
+  command: logstash -f /etc/logstash/conf.d/logstash.conf
+  volumes:
+    - /opt/logstash/config/logstash.conf:/etc/logstash/conf.d/logstash.conf
+    - /opt/logstash/log:/var/log/logstash
+  ports:
+    - "5000:5000"
+    - "5044:5044"
+    - "5045:5045"
+    - "25826:25826/udp"
+  links:
+    - elasticsearch
+  restart: always
+kibana:
+  image: kibana
+  ports:
+    - 5601:5601
+  links:
+    - elasticsearch
+  environment:
+    - ELASTICSEARCH_URL=http://elasticsearch:9200
+  restart: always
