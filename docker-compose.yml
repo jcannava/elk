@@ -12,7 +12,7 @@ elasticsearch:
   environment:
     ES_HEAP_SIZE: "512m"
 logstash:
-  image: jcannava:logstash
+  build: logstash/
   command: logstash -f /etc/logstash/conf.d/logstash.conf
   volumes:
     - /opt/logstash/config/logstash.conf:/etc/logstash/conf.d/logstash.conf
